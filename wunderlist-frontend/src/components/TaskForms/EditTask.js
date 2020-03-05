@@ -2,11 +2,14 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
+import moment from "moment";
+
 import styled from "styled-components";
 import { Alert } from "@smooth-ui/core-sc";
 import {
    Form,
    Input,
+   CalendarInput,
    InputDiv as InputContainer,
    ButtonBox,
    FormButton,
@@ -36,16 +39,24 @@ const CalendarIcon = styled(FaCalendarCheck)`
 
 // Yup form validation
 const FormSchema = yup.object().shape({
-   name: yup.string().required("Please enter a name for your task."),
+   task: yup.string().required("Please enter a name for your task."),
    description: yup.string("Description should be a string.")
 });
+
+const formatEpoch = dueDate => {
+   if (dueDate) {
+      return moment.unix(dueDate / 1000).format("YYYY-MM-DD");
+   }
+   return null;
+};
 
 const EditTask = ({ task, taskFunctions, closeModal }) => {
    const { register, handleSubmit, errors } = useForm({
       validationSchema: FormSchema,
       defaultValues: {
-         name: task.name || "",
-         description: task.description || ""
+         task: task.task || "",
+         description: task.description || "",
+         due_date: formatEpoch(task.due_date)
       }
    });
 
@@ -61,11 +72,11 @@ const EditTask = ({ task, taskFunctions, closeModal }) => {
             <Input
                placeholder="Name of the task"
                type="text"
-               name="name"
+               name="task"
                ref={register}
             />
-            {errors.email && (
-               <Alert variant="danger">{errors.name.message}</Alert>
+            {errors.task && (
+               <Alert variant="danger">{errors.task.message}</Alert>
             )}
          </InputContainer>
 
@@ -87,7 +98,7 @@ const EditTask = ({ task, taskFunctions, closeModal }) => {
          <InputSection>
             <CalendarIcon />
             <InputContainer>
-               <Input type="date" name="due" ref={register} />
+               <CalendarInput type="date" name="due_date" ref={register} />
             </InputContainer>
          </InputSection>
 
@@ -102,7 +113,7 @@ const EditTask = ({ task, taskFunctions, closeModal }) => {
                Delete Task
             </FormButton>
             <FormButton width="69.5%" variant="secondary" type="submit">
-               Add Task
+               Submit
             </FormButton>
          </ButtonBox>
       </Form>

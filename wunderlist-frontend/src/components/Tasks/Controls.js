@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+
 import styled from "styled-components";
 import { FaPlusCircle } from "react-icons/fa";
+import { Button } from "@smooth-ui/core-sc";
 
 import Modal from "react-modal";
 import ModalStyle from "../../styles/ModalStyle";
@@ -15,6 +17,16 @@ const ControlsContainer = styled.div`
       color: ${({ theme }) => theme.colors.secondary};
       margin: 0;
       font-size: 1.8rem;
+   }
+
+   .right {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+
+      button {
+         margin: 0 10px;
+      }
    }
 `;
 
@@ -49,7 +61,16 @@ const Controls = props => {
    return (
       <ControlsContainer>
          <h2>{props.title}</h2>
-         <NewTaskIcon onClick={openModal} />
+         <div className="right">
+            <Button
+               variant="secondary"
+               onClick={() => props.setShowCompleted(show => !show)}
+            >
+               {!props.showCompleted && `Show Completed Tasks`}
+               {props.showCompleted && `Hide Completed Tasks`}
+            </Button>
+            <NewTaskIcon onClick={openModal} />
+         </div>
 
          <Modal
             isOpen={modalIsOpen}

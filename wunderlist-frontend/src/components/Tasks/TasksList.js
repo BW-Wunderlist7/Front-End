@@ -19,6 +19,11 @@ const TasksContainer = styled.div`
    border-radius: 0 0 10px 10px;
 
    background: ${({ theme }) => theme.colors.background};
+
+   h2 {
+      font-size: 1.8rem;
+      padding: 10px 0;
+   }
 `;
 
 // Filter tasks by time range
@@ -26,57 +31,83 @@ const filterTasks = (
    tasks,
    startTimeUnix,
    endTimeUnix,
-   dueTimeRequired = false
+   dueTimeRequired = false,
+   showCompleted = false
 ) => {
    return tasks.filter(task => {
-      if (
-         task.due_date &&
-         task.due_date >= startTimeUnix &&
-         task.due_date <= endTimeUnix
-      ) {
-         return task;
-      } else if (!task.due_date && !dueTimeRequired) {
-         return task;
+      if (task.completed <= showCompleted) {
+         if (
+            task.due_date &&
+            task.due_date >= startTimeUnix &&
+            task.due_date <= endTimeUnix
+         ) {
+            return task;
+         } else if (!task.due_date && !dueTimeRequired) {
+            return task;
+         }
       }
    });
 };
 
-const AllTasks = ({ tasks, taskFunctions }) => {
-   const TasksToday = filterTasks(
-      tasks,
-      0,
-      Date.now() + ONE_DAY_MS
-   ).map(task => (
-      <TaskCard taskFunctions={taskFunctions} key={task.id} task={task} />
-   ));
+const getTasksToday = (tasks, showCompleted) => {
+   return filterTasks(tasks, 0, Date.now() + ONE_DAY_MS, false, showCompleted);
+};
 
-   const OtherTasks = filterTasks(
+const getTasksAfterToday = (tasks, showCompleted) => {
+   return filterTasks(
       tasks,
       Date.now() + ONE_DAY_MS + 1,
       MAX_EPOCH_TIME,
-      true
-   ).map(task => (
+      true,
+      showCompleted
+   );
+};
+
+const AllTasks = ({
+   tasks,
+   taskFunctions,
+   showCompleted,
+   setShowCompleted
+}) => {
+   const TasksToday = getTasksToday(tasks, showCompleted).map(task => (
+      <TaskCard taskFunctions={taskFunctions} key={task.id} task={task} />
+   ));
+
+   const OtherTasks = getTasksAfterToday(tasks, showCompleted).map(task => (
       <TaskCard taskFunctions={taskFunctions} key={task.id} task={task} />
    ));
 
    return (
       <TasksContainer>
-         <Controls taskFunctions={taskFunctions} title={"Today's Tasks"} />
+         <Controls
+            showCompleted={showCompleted}
+            setShowCompleted={setShowCompleted}
+            taskFunctions={taskFunctions}
+            title={"Today's Tasks"}
+         />
          {TasksToday}
-         {TasksToday.length === 0 && <Alert>No tasks for today! Wohoo!</Alert>}
-         <Controls taskFunctions={taskFunctions} title={"After Today"} />
+         {TasksToday.length === 0 && (
+            <Alert variant="secondary">No tasks for today! Wohoo!</Alert>
+         )}
+         <h2>After Today</h2>
          {OtherTasks}
          {OtherTasks.length === 0 && (
-            <Alert>No tasks after today, time to start planning!</Alert>
+            <Alert variant="secondary">
+               No tasks after today, time to start planning!
+            </Alert>
          )}
       </TasksContainer>
    );
 };
 
-const TasksFilteredByDueDate = ({ taskFunctions, tasks }) => {
+const TasksFilteredByDueDate = ({
+   taskFunctions,
+   tasks,
+   showCompleted,
+   setShowCompleted
+}) => {
    const [title, setTitle] = useState("");
    const { daysOut } = useParams();
-   console.log("params", useParams());
 
    useEffect(() => {
       if (daysOut) {
@@ -92,18 +123,30 @@ const TasksFilteredByDueDate = ({ taskFunctions, tasks }) => {
 
    // Calculate the Unix Epoch time (MS) for the amount of days out
    const maxTime = Date.now() + daysOut * ONE_DAY_MS;
-   const Tasks = filterTasks(tasks, 0, maxTime).map(task => {
-      return (
-         <TaskCard taskFunctions={taskFunctions} key={task.id} task={task} />
-      );
-   });
+   const Tasks = filterTasks(tasks, 0, maxTime, false, showCompleted).map(
+      task => {
+         return (
+            <TaskCard
+               taskFunctions={taskFunctions}
+               showCompleted={showCompleted}
+               key={task.id}
+               task={task}
+            />
+         );
+      }
+   );
 
    return (
       <TasksContainer>
-         <Controls taskFunctions={taskFunctions} title={title} />
+         <Controls
+            showCompleted={showCompleted}
+            setShowCompleted={setShowCompleted}
+            taskFunctions={taskFunctions}
+            title={title}
+         />
          {Tasks}
          {Tasks.length === 0 && (
-            <Alert>
+            <Alert variant="secondary">
                No tasks for this time period. Click 'View All' to view all
                tasks.
             </Alert>
@@ -113,9 +156,23 @@ const TasksFilteredByDueDate = ({ taskFunctions, tasks }) => {
 };
 
 const TasksList = ({ tasks, taskFunctions, all }) => {
-   if (all) return <AllTasks tasks={tasks} taskFunctions={taskFunctions} />;
+   const [showCompleted, setShowCompleted] = useState(false);
+   if (all)
+      return (
+         <AllTasks
+            tasks={tasks}
+            showCompleted={showCompleted}
+            setShowCompleted={setShowCompleted}
+            taskFunctions={taskFunctions}
+         />
+      );
    return (
-      <TasksFilteredByDueDate tasks={tasks} taskFunctions={taskFunctions} />
+      <TasksFilteredByDueDate
+         tasks={tasks}
+         showCompleted={showCompleted}
+         setShowCompleted={setShowCompleted}
+         taskFunctions={taskFunctions}
+      />
    );
 };
 

@@ -21,6 +21,10 @@ export const Input = styled(SmoothInput)`
    }
 `;
 
+export const CalendarInput = styled(Input)`
+   color: grey;
+`;
+
 export const InputDiv = styled.div`
    margin: 10px 0;
    width: 100%;

@@ -7,6 +7,7 @@ import { Alert } from "@smooth-ui/core-sc";
 import {
    Form,
    Input,
+   CalendarInput,
    InputDiv as InputContainer,
    ButtonBox,
    FormButton,
@@ -40,7 +41,7 @@ const CalendarInput = styled(Input)`
 
 // Yup form validation
 const FormSchema = yup.object().shape({
-   name: yup.string().required("Please enter a name for your task."),
+   task: yup.string().required("Please enter a name for your task."),
    description: yup.string("Description should be a string.")
 });
 
@@ -61,18 +62,18 @@ const NewTaskForm = ({ taskFunctions, closeModal }) => {
             <Input
                placeholder="Name of the task"
                type="text"
-               name="name"
+               name="task"
                ref={register}
             />
+            {errors.task && (
+               <Alert variant="danger">{errors.task.message}</Alert>
+            )}
             {
                <Alert variant="secondary">
-                  Only a name is required for your task, all other inputs are
+                  Only a name is required for your task; all other inputs are
                   optional.
                </Alert>
             }
-            {errors.name && (
-               <Alert variant="danger">{errors.name.message}</Alert>
-            )}
          </InputContainer>
 
          <InputSection>

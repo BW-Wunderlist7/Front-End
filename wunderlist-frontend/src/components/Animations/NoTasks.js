@@ -23,6 +23,9 @@ const FirstTaskButton = styled(Button)`
    margin: 30px 0 0;
 
    font-weight: 600;
+
+   position: relative;
+   z-index: 0;
 `;
 const Content = styled.section`
    display: flex;

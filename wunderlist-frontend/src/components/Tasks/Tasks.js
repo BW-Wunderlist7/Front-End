@@ -35,18 +35,16 @@ const Tasks = () => {
          .get("/tasks")
          .then(res => {
             res.data.task.map(task => {
-               if (task.completed === false) {
-                  const newTask = {
-                     completed: task.completed,
-                     id: task.id,
-                     creationTime: task.timestamp,
-                     name: task.task,
-                     description: task.description,
-                     due_date: task.due_date,
-                     tags: task.tags || []
-                  };
-                  setTasks(tasks => [...tasks, newTask]);
-               }
+               const newTask = {
+                  task: task.task,
+                  description: task.description,
+                  completed: task.completed,
+                  id: task.id,
+                  creationTime: task.timestamp,
+                  due_date: task.due_date,
+                  tags: task.tags || []
+               };
+               setTasks(tasks => [...tasks, newTask]);
             });
          })
          .catch(err => {
@@ -62,25 +60,19 @@ const Tasks = () => {
    const addNewTask = data => {
       axiosWithAuth()
          .post("/tasks", {
-            task: data.name,
+            task: data.task,
             description: data.description,
+            due_date: parseDateString(data.due_date),
             timestamp: Date.now(),
             completed: false,
-            due_date: parseDateString(data.due_date)
+            tags: []
          })
          .then(res => {
-            //UPDATE THIS
-            console.log("Got new task with id:", res.data.id[0]);
             const newTask = {
-               completed: false,
-               id: res.data.id[0],
-               creationTime: Date.now(),
-               name: data.name,
-               description: data.description,
-               due_date: parseDateString(data.due_date),
-               tags: []
+               ...res.data.newTask,
+               id: res.data.task[0]
             };
-            console.log(newTask, moment(newTask.due_date));
+            console.log("NEW TASK", newTask);
             setTasks(tasks => [...tasks, newTask]);
          })
          .catch(err => {
@@ -109,26 +101,19 @@ const Tasks = () => {
       console.log(taskID);
       axiosWithAuth()
          .put("/tasks/" + taskID, {
-            task: formData.name || "",
+            task: formData.task || "",
             description: formData.description || "",
             timestamp: Date.now(),
             completed: formData.completed || false,
-            due_date: formData.due_date || null
+            due_date: parseDateString(formData.due_date)
          })
          .then(res => {
-            const newTask = {
-               name: formData.name,
-               description: formData.description || "",
-               completed: formData.completed || false,
-               due_date: formData.due_date || null,
-               tags: []
-            };
             setTasks(tasks =>
                tasks.map(task => {
                   if (task.id === taskID) {
                      return {
                         ...task,
-                        ...newTask
+                        ...res.data.update
                      };
                   } else {
                      return { ...task };
