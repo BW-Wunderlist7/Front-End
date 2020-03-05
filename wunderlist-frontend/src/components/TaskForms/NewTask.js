@@ -35,10 +35,6 @@ const CalendarIcon = styled(FaCalendarCheck)`
    margin: 0 1.55rem 0 0.75rem;
 `;
 
-const CalendarInput = styled(Input)`
-   color: grey;
-`;
-
 // Yup form validation
 const FormSchema = yup.object().shape({
    task: yup.string().required("Please enter a name for your task."),
