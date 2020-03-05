@@ -34,16 +34,19 @@ const CalendarIcon = styled(FaCalendarCheck)`
    margin: 0 1.55rem 0 0.75rem;
 `;
 
+const CalendarInput = styled(Input)`
+   color: grey;
+`;
+
 // Yup form validation
 const FormSchema = yup.object().shape({
    name: yup.string().required("Please enter a name for your task."),
-   description: yup.string("Please make sure to enter a password.")
+   description: yup.string("Description should be a string.")
 });
 
 const NewTaskForm = ({ taskFunctions, closeModal }) => {
    const { register, handleSubmit, errors } = useForm({
-      validationSchema: FormSchema,
-      mode: "onBlur"
+      validationSchema: FormSchema
    });
 
    const onSubmit = data => {
@@ -61,7 +64,13 @@ const NewTaskForm = ({ taskFunctions, closeModal }) => {
                name="name"
                ref={register}
             />
-            {errors.email && (
+            {
+               <Alert variant="secondary">
+                  Only a name is required for your task, all other inputs are
+                  optional.
+               </Alert>
+            }
+            {errors.name && (
                <Alert variant="danger">{errors.name.message}</Alert>
             )}
          </InputContainer>
@@ -75,7 +84,7 @@ const NewTaskForm = ({ taskFunctions, closeModal }) => {
                   name="description"
                   ref={register}
                />
-               {errors.password && (
+               {errors.description && (
                   <Alert variant="danger">{errors.description.message}</Alert>
                )}
             </InputContainer>
@@ -84,7 +93,7 @@ const NewTaskForm = ({ taskFunctions, closeModal }) => {
          <InputSection>
             <CalendarIcon />
             <InputContainer>
-               <Input type="date" name="due" ref={register} />
+               <CalendarInput type="date" name="due_date" ref={register} />
             </InputContainer>
          </InputSection>
 

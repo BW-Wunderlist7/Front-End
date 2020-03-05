@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import { useParams } from "react-router-dom";
+
+import styled from "styled-components";
+import { Alert } from "@smooth-ui/core-sc";
 
 import Controls from "./Controls";
 import TaskCard from "./TaskCard";
@@ -27,9 +29,13 @@ const filterTasks = (
    dueTimeRequired = false
 ) => {
    return tasks.filter(task => {
-      if (task.due && task.due >= startTimeUnix && task.due <= endTimeUnix) {
+      if (
+         task.due_date &&
+         task.due_date >= startTimeUnix &&
+         task.due_date <= endTimeUnix
+      ) {
          return task;
-      } else if (!task.due && !dueTimeRequired) {
+      } else if (!task.due_date && !dueTimeRequired) {
          return task;
       }
    });
@@ -57,8 +63,12 @@ const AllTasks = ({ tasks, taskFunctions }) => {
       <TasksContainer>
          <Controls taskFunctions={taskFunctions} title={"Today's Tasks"} />
          {TasksToday}
+         {TasksToday.length === 0 && <Alert>No tasks for today! Wohoo!</Alert>}
          <Controls taskFunctions={taskFunctions} title={"After Today"} />
          {OtherTasks}
+         {OtherTasks.length === 0 && (
+            <Alert>No tasks after today, time to start planning!</Alert>
+         )}
       </TasksContainer>
    );
 };
@@ -92,6 +102,12 @@ const TasksFilteredByDueDate = ({ taskFunctions, tasks }) => {
       <TasksContainer>
          <Controls taskFunctions={taskFunctions} title={title} />
          {Tasks}
+         {Tasks.length === 0 && (
+            <Alert>
+               No tasks for this time period. Click 'View All' to view all
+               tasks.
+            </Alert>
+         )}
       </TasksContainer>
    );
 };

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
 
+import moment from "moment";
+
 import { axiosWithAuth } from "../../utils/axiosWithAuth";
 
 import TasksList from "./TasksList";
@@ -9,6 +11,18 @@ import DateButtons from "./DateButtons";
 import Container from "../../styles/Container";
 import LoadingAnimation from "../Animations/Loading";
 import NoTasksAnimation from "../Animations/NoTasks";
+
+const parseDateString = date => {
+   let parsed = moment(date, "YYYY/MM/DD");
+   if (parsed.isValid()) {
+      return parsed
+         .add(1, "d")
+         .subtract(1, "s")
+         .valueOf();
+   } else {
+      return null;
+   }
+};
 
 const Tasks = () => {
    const [tasks, setTasks] = useState([]);
@@ -28,7 +42,7 @@ const Tasks = () => {
                      creationTime: task.timestamp,
                      name: task.task,
                      description: task.description,
-                     due: task.due_date,
+                     due_date: task.due_date,
                      tags: task.tags || []
                   };
                   setTasks(tasks => [...tasks, newTask]);
@@ -52,7 +66,7 @@ const Tasks = () => {
             description: data.description,
             timestamp: Date.now(),
             completed: false,
-            due_date: null
+            due_date: parseDateString(data.due_date)
          })
          .then(res => {
             //UPDATE THIS
@@ -63,9 +77,10 @@ const Tasks = () => {
                creationTime: Date.now(),
                name: data.name,
                description: data.description,
-               due_date: undefined,
+               due_date: parseDateString(data.due_date),
                tags: []
             };
+            console.log(newTask, moment(newTask.due_date));
             setTasks(tasks => [...tasks, newTask]);
          })
          .catch(err => {
@@ -91,28 +106,26 @@ const Tasks = () => {
    };
 
    const editTask = (formData, taskID) => {
+      console.log(taskID);
       axiosWithAuth()
          .put("/tasks/" + taskID, {
             task: formData.name || "",
             description: formData.description || "",
             timestamp: Date.now(),
-            completed: true,
+            completed: formData.completed || false,
             due_date: formData.due_date || null
          })
          .then(res => {
             const newTask = {
-               task: formData.name || "",
+               name: formData.name,
                description: formData.description || "",
-               timestamp: Date.now(),
-               completed: true,
+               completed: formData.completed || false,
                due_date: formData.due_date || null,
-               id: taskID,
                tags: []
             };
             setTasks(tasks =>
                tasks.map(task => {
                   if (task.id === taskID) {
-                     console.log("editing");
                      return {
                         ...task,
                         ...newTask
@@ -136,6 +149,7 @@ const Tasks = () => {
       toggleCompleted: toggleCompleted
    };
 
+   console.log(tasks);
    return (
       <Container flexDirection="column">
          <DateButtons />

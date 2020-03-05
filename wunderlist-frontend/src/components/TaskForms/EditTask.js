@@ -37,13 +37,12 @@ const CalendarIcon = styled(FaCalendarCheck)`
 // Yup form validation
 const FormSchema = yup.object().shape({
    name: yup.string().required("Please enter a name for your task."),
-   description: yup.string("Please make sure to enter a password.")
+   description: yup.string("Description should be a string.")
 });
 
 const EditTask = ({ task, taskFunctions, closeModal }) => {
    const { register, handleSubmit, errors } = useForm({
       validationSchema: FormSchema,
-      mode: "onBlur",
       defaultValues: {
          name: task.name || "",
          description: task.description || ""
