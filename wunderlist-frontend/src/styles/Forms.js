@@ -1,5 +1,9 @@
 import styled from "styled-components";
-import { Input as SmoothInput, Button } from "@smooth-ui/core-sc";
+import {
+   Input as SmoothInput,
+   Button,
+   Textarea as SmoothTextarea
+} from "@smooth-ui/core-sc";
 
 export const Form = styled.form`
    width: 650px;
@@ -15,6 +19,17 @@ export const Input = styled(SmoothInput)`
    width: 100%;
    border: 1px solid ${({ theme }) => theme.colors.secondary};
    background-color: white;
+
+   &:focus {
+      border-color: ${({ theme }) => theme.colors.secondary};
+   }
+`;
+
+export const TextArea = styled(SmoothTextarea)`
+   width: 100%;
+   border: 1px solid ${({ theme }) => theme.colors.secondary};
+   background-color: white;
+   height: 40px;
 
    &:focus {
       border-color: ${({ theme }) => theme.colors.secondary};

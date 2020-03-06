@@ -10,6 +10,7 @@ import {
    Form,
    Input,
    CalendarInput,
+   TextArea,
    InputDiv as InputContainer,
    ButtonBox,
    FormButton,
@@ -83,13 +84,13 @@ const EditTask = ({ task, taskFunctions, closeModal }) => {
          <InputSection>
             <DescriptionIcon />
             <InputContainer>
-               <Input
+               <TextArea
                   placeholder="Description"
-                  type="text"
+                  type="textarea"
                   name="description"
                   ref={register}
                />
-               {errors.password && (
+               {errors.description && (
                   <Alert variant="danger">{errors.description.message}</Alert>
                )}
             </InputContainer>

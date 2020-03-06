@@ -45,6 +45,10 @@ const NewTaskIcon = styled(FaPlusCircle)`
    }
 `;
 
+const TasksButton = styled(Button)`
+   position: relative;
+`;
+
 Modal.setAppElement("#root");
 
 const Controls = props => {
@@ -62,13 +66,13 @@ const Controls = props => {
       <ControlsContainer>
          <h2>{props.title}</h2>
          <div className="right">
-            <Button
+            <TasksButton
                variant="secondary"
                onClick={() => props.setShowCompleted(show => !show)}
             >
                {!props.showCompleted && `Show Completed Tasks`}
                {props.showCompleted && `Hide Completed Tasks`}
-            </Button>
+            </TasksButton>
             <NewTaskIcon onClick={openModal} />
          </div>
 

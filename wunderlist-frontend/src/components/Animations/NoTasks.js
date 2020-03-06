@@ -25,7 +25,6 @@ const FirstTaskButton = styled(Button)`
    font-weight: 600;
 
    position: relative;
-   z-index: 0;
 `;
 const Content = styled.section`
    display: flex;

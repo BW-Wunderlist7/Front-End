@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 
 import styled from "styled-components";
-import Container from "../../styles/Container";
 import { Button } from "@smooth-ui/core-sc";
-import { FaUserCircle } from "react-icons/fa";
-import { useHistory } from "react-router-dom";
+import Container from "../../styles/Container";
+
+import LoadingAnimation from "../Animations/Loading";
 
 import { axiosWithAuth } from "../../utils/axiosWithAuth";
+
+import Avatar from "./Avatar";
+import ProfileForm from "./ProfileForm";
 
 const StyledProfile = styled.section`
    background-color: ${({ theme }) => theme.colors.primary};
@@ -32,23 +35,7 @@ const CurrentInfo = styled.div`
    }
 `;
 
-const AvatarInfo = styled.section`
-   display: flex;
-`;
-
 const ProfileInfo = styled.section``;
-
-const DefaultAvatar = styled(FaUserCircle)`
-   fill: ${({ theme }) => theme.colors.secondary};
-   font-size: 8.5rem;
-   margin: 0 20px;
-`;
-
-const AvatarButtons = styled.div`
-   display: flex;
-   flex-direction: column;
-   justify-content: space-between;
-`;
 
 const ProfileTab = styled.div`
    height: 54px;
@@ -71,95 +58,140 @@ const ProfileTab = styled.div`
    }
 `;
 
+const StyledNoProfile = styled.div`
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   width: 100%;
+`;
+
+const DelButton = styled(Button)`
+   margin: 12.5px 0;
+`;
+
+const ProfileSwitch = ({ profile, profileFunctions }) => {
+   console.log("profile", profile);
+   if (profile && Object.keys(profile).length >= 2) {
+      return (
+         <>
+            <ProfileInfo>
+               <h1>{`${profile.first_name} ${profile.last_name}`}</h1>
+               {profile.occupation && <p>Occupation: {profile.occupation}</p>}
+               {profile.age && <p>Age: {profile.age}</p>}
+               <DelButton
+                  onClick={profileFunctions.deleteProfile}
+                  outline
+                  variant="warning"
+               >
+                  Delete Profile Information
+               </DelButton>
+            </ProfileInfo>
+            <Avatar />
+         </>
+      );
+   } else {
+      return (
+         <StyledNoProfile>
+            <ProfileForm createProfile={profileFunctions.createProfile} />
+         </StyledNoProfile>
+      );
+   }
+};
+
 const Profile = () => {
    const [profile, setProfile] = useState({});
-
-   const [updated, setUpdated] = useState(false);
-   const history = useHistory();
+   const [loading, setLoading] = useState(false);
 
    useEffect(() => {
+      setLoading(true);
       axiosWithAuth()
          .get("/profile")
          .then(res => {
-            if (res.data.length >= 0) {
-               setProfile(res.data.profile[res.data.profile.length - 1]);
+            if (res.data.profile.length >= 0) {
+               setProfile(res.data.profile[0]);
             }
+            setTimeout(() => {
+               setLoading(false);
+            }, 1000);
          })
          .catch(err => {
             console.log(err);
          });
-   }, [updated]);
+   }, []);
 
-   const createProfile = userData => {
+   const createProfile = user => {
       axiosWithAuth()
          .post("/profile", {
-            first_name: "First",
-            last_name: "Name",
-            age: 25,
-            occupation: "Developer"
+            first_name: user.first_name || "",
+            last_name: user.last_name || "",
+            age: user.age || null,
+            occupation: user.occupation || ""
          })
          .then(res => {
-            setUpdated(true);
+            console.log("Created profile:", res.data);
+            setProfile(res.data.profile);
          })
          .catch(err => {
             console.log("Profile post error:", err);
          });
    };
 
-   const editProfile = userData => {
+   const editProfile = user => {
       axiosWithAuth()
-         .put("/profile/1")
+         .put("/profile/" + profile.id, {
+            ...profile,
+            ...user
+         })
          .then(res => {
-            setUpdated(true);
+            setProfile(profile => {
+               const newProfile = {
+                  ...profile,
+                  ...res.data.newProfile
+               };
+               console.log("new", newProfile);
+               return newProfile;
+            });
          })
          .catch(err => {
             console.log("Profile put error:", err);
          });
    };
 
-   const deleteProfile = userData => {
+   const deleteProfile = () => {
+      console.log(profile.id);
       axiosWithAuth()
-         .delete("/delete/2")
+         .delete("/profile/" + profile.id)
          .then(res => {
-            setProfile(res.userData);
+            console.log("Deleted profile:", res.data);
+            setProfile({});
          })
          .catch(err => {
             console.log("Profile delete error", err);
          });
    };
 
-   createProfile();
+   const profileFunctions = {
+      createProfile: createProfile,
+      editProfile: editProfile,
+      deleteProfile: deleteProfile
+   };
+
    return (
       <Container flexDirection="column">
          <ProfileTab>
             <span>Profile Information</span>
          </ProfileTab>
-         <StyledProfile>
-            <CurrentInfo>
-               <ProfileInfo>
-                  <h1>
-                     {profile.first_name && `${profile.first_name}`}
-                     {profile.last_name && ` ${profile.last_name}`}
-                  </h1>
-                  {profile.occupation && <p>{profile.occupation}</p>}
-                  {profile.age && <p>{profile.age} years old</p>}
-               </ProfileInfo>
-               <AvatarInfo>
-                  <DefaultAvatar />
-                  <AvatarButtons>
-                     <Button outline variant="secondary">
-                        Change Avatar
-                     </Button>
-                     <Button outline variant="secondary">
-                        Upload Avatar
-                     </Button>
-                     <Button outline variant="warning">
-                        Delete Avatar
-                     </Button>
-                  </AvatarButtons>
-               </AvatarInfo>
-            </CurrentInfo>
-         </StyledProfile>
+         {loading && <LoadingAnimation />}
+         {!loading && (
+            <StyledProfile>
+               <CurrentInfo>
+                  <ProfileSwitch
+                     profile={profile}
+                     profileFunctions={profileFunctions}
+                  />
+               </CurrentInfo>
+            </StyledProfile>
+         )}
       </Container>
    );
 };

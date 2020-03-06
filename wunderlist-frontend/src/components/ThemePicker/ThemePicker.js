@@ -28,17 +28,12 @@ const ColorCircle = styled.div`
 
 const colors = ["black", "#FF5722", "#4CAF50", "#C2185B", "#502E88"];
 
-
 const ThemePicker = props => {
-   const updateLocalColor = (color) => {
-      localStorage.setItem('COLOR', color);
-      props.updateColorTheme();
-   }
    const ColorCircles = colors.map((color, index) => {
       return (
          <ColorCircle
             key={index}
-            onClick={() => updateLocalColor(color)}
+            onClick={() => props.setColorTheme(color)}
             color={color}
          />
       );

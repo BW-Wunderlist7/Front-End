@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { NavLink, Link, useHistory } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 
 import Container from "../../styles/Container";
 import { Button } from "@smooth-ui/core-sc";
@@ -88,8 +88,6 @@ const LogOutButton = styled(Button)`
 `;
 
 const NavBar = () => {
-   const history = useHistory();
-
    const logOut = () => {
       localStorage.removeItem("AUTH_TOKEN");
       window.location.replace("https://wunderlist7.netlify.com/");
