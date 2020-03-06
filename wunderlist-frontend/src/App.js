@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
-import { Normalize } from "@smooth-ui/core-sc";
-import { Route, Redirect } from "react-router-dom";
+import React, { useState } from 'react';
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { Normalize } from '@smooth-ui/core-sc';
+import { Route, Redirect } from 'react-router-dom';
 
-import { PrivateRoute } from "./utils/PrivateRoute";
+import { PrivateRoute } from './utils/PrivateRoute';
 
-import Profile from "./components/Profile/Profile";
-import LoginForm from "./components/Login/LoginForm";
-import RegisterForm from "./components/Register/RegisterForm";
-import Tasks from "./components/Tasks/Tasks";
-import ThemePicker from "./components/ThemePicker/ThemePicker";
-import NavBar from "./components/Navbar/Navbar";
-import { TestUser } from "./components/TestUser/TestUser";
+import Profile from './components/Profile/Profile';
+import LoginForm from './components/Login/LoginForm';
+import RegisterForm from './components/Register/RegisterForm';
+import Tasks from './components/Tasks/Tasks';
+import ThemePicker from './components/ThemePicker/ThemePicker';
+import NavBar from './components/Navbar/Navbar';
+import { TestUser } from './components/TestUser/TestUser';
 
 // Global style that is applied to the whole project
 const GlobalStyle = createGlobalStyle`
@@ -37,7 +37,7 @@ const GlobalStyle = createGlobalStyle`
 
       background: #0f0c29;  
       background: ${({ theme }) =>
-         `linear-gradient(to right, ${theme.colors.secondary}, #e9e4f0)`};
+				`linear-gradient(to right, ${theme.colors.secondary}, #e9e4f0)`};
 
       &::-webkit-scrollbar {
          display: none;
@@ -46,73 +46,73 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const AppContainer = styled.div`
-   padding-top: 100px;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
+	padding-top: 100px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 `;
 
 function App() {
-   const [theme, setTheme] = useState({
-      colors: {
-         primary: "white",
-         secondary: "#502E88",
+	const [theme, setTheme] = useState({
+		colors: {
+			primary: 'white',
+			secondary: localStorage.getItem('COLOR'),
 
-         background: "white",
-         contrast: "black",
+			background: 'white',
+			contrast: 'black',
 
-         light: "white",
-         dark: "#363754",
+			light: 'white',
+			dark: '#363754',
 
-         info: "#757F9A",
-         warning: "#FF0000"
-      },
+			info: '#757F9A',
+			warning: '#FF0000'
+		},
 
-      fonts: {
-         base: "'Open Sans', "
-      }
-   });
+		fonts: {
+			base: "'Open Sans', "
+		}
+	});
 
-   const setColorTheme = colorCode => {
-      let newTheme = { ...theme };
-      newTheme.colors.secondary = colorCode;
-      setTheme(newTheme);
-   };
+	const updateColorTheme = () => {
+		let newTheme = { ...theme };
+		newTheme.colors.secondary = localStorage.getItem('COLOR');
+		setTheme(newTheme);
+	};
 
-   return (
-      <ThemeProvider theme={theme}>
-         <Normalize />
-         <GlobalStyle />
+	return (
+		<ThemeProvider theme={theme}>
+			<Normalize />
+			<GlobalStyle />
 
-         <AppContainer>
-            <NavBar />
+			<AppContainer>
+				<NavBar />
 
-            <PrivateRoute path="/tasks" component={Tasks} />
-            <Route path="/tasks">
-               <ThemePicker setColorTheme={setColorTheme} />
-            </Route>
+				<PrivateRoute path='/tasks' component={Tasks} />
+				<Route path='/tasks'>
+					<ThemePicker updateColorTheme={updateColorTheme} />
+				</Route>
 
-            <PrivateRoute path="/profile" component={Profile} />
-            <Route path="/profile">
-               <ThemePicker setColorTheme={setColorTheme} />
-            </Route>
+				<PrivateRoute path='/profile' component={Profile} />
+				<Route path='/profile'>
+					<ThemePicker updateColorTheme={updateColorTheme} />
+				</Route>
 
-            <Route path="/login">
-               <LoginForm />
-            </Route>
+				<Route path='/login'>
+					<LoginForm />
+				</Route>
 
-            <Route path="/register">
-               <RegisterForm />
-            </Route>
+				<Route path='/register'>
+					<RegisterForm />
+				</Route>
 
-            <Route path="/testUser" component={TestUser} />
+				<Route path='/testUser' component={TestUser} />
 
-            <Route exact path="/">
-               <Redirect to="/tasks" />
-            </Route>
-         </AppContainer>
-      </ThemeProvider>
-   );
+				<Route exact path='/'>
+					<Redirect to='/tasks' />
+				</Route>
+			</AppContainer>
+		</ThemeProvider>
+	);
 }
 
 export default App;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 import styled from "styled-components";
 import Container from "../../styles/Container";
@@ -6,69 +6,69 @@ import { Button } from "@smooth-ui/core-sc";
 import { FaUserCircle } from "react-icons/fa";
 import { useHistory } from "react-router-dom";
 
-import { axiosWithAuth } from '../../utils/axiosWithAuth';
+import { axiosWithAuth } from "../../utils/axiosWithAuth";
 
 const StyledProfile = styled.section`
-	background-color: ${({ theme }) => theme.colors.primary};
-	border-radius: 0 0 10px 10px;
+   background-color: ${({ theme }) => theme.colors.primary};
+   border-radius: 0 0 10px 10px;
 
-	width: 100%;
-	padding: 30px;
+   width: 100%;
+   padding: 30px;
 `;
 
 const CurrentInfo = styled.div`
-	display: flex;
-	width: 100%;
-	justify-content: space-between;
-	align-items: flex-start;
+   display: flex;
+   width: 100%;
+   justify-content: space-between;
+   align-items: flex-start;
 
-	h1 {
-		margin: 0 0 10px 0;
-	}
+   h1 {
+      margin: 0 0 10px 0;
+   }
 
-	p {
-		margin: 0;
-		font-size: 1.1rem;
-	}
+   p {
+      margin: 0;
+      font-size: 1.1rem;
+   }
 `;
 
 const AvatarInfo = styled.section`
-	display: flex;
+   display: flex;
 `;
 
 const ProfileInfo = styled.section``;
 
 const DefaultAvatar = styled(FaUserCircle)`
-	fill: ${({ theme }) => theme.colors.secondary};
-	font-size: 8.5rem;
-	margin: 0 20px;
+   fill: ${({ theme }) => theme.colors.secondary};
+   font-size: 8.5rem;
+   margin: 0 20px;
 `;
 
 const AvatarButtons = styled.div`
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
 `;
 
 const ProfileTab = styled.div`
-	height: 54px;
+   height: 54px;
 
-	background: ${({ theme }) => theme.colors.secondary};
+   background: ${({ theme }) => theme.colors.secondary};
 
-	border: ${({ theme }) => `2px solid ${theme.colors.primary}`};
-	border-radius: 5px 5px 0 0;
+   border: ${({ theme }) => `2px solid ${theme.colors.primary}`};
+   border-radius: 5px 5px 0 0;
 
-	display: flex;
-	align-items: center;
+   display: flex;
+   align-items: center;
 
-	padding: 0 30px;
+   padding: 0 30px;
 
-	span {
-		font-size: 1.333rem;
-		font-weight: 600;
-		margin: 0;
-		color: ${({ theme }) => theme.colors.primary};
-	}
+   span {
+      font-size: 1.333rem;
+      font-weight: 600;
+      margin: 0;
+      color: ${({ theme }) => theme.colors.primary};
+   }
 `;
 
 const Profile = () => {
@@ -128,12 +128,6 @@ const Profile = () => {
          });
    };
 
-   const signOut = () => {
-      localStorage.removeItem("AUTH_TOKEN");
-      localStorage.removeItem("USER_ID");
-      history.push("/login");
-   };
-
    createProfile();
    return (
       <Container flexDirection="column">
@@ -161,9 +155,6 @@ const Profile = () => {
                      </Button>
                      <Button outline variant="warning">
                         Delete Avatar
-                     </Button>
-                     <Button onClick={signOut} outline variant="secondary">
-                        Sign Out
                      </Button>
                   </AvatarButtons>
                </AvatarInfo>
