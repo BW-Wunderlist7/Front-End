@@ -3,38 +3,43 @@ import { useDropzone } from "react-dropzone";
 
 import styled from "styled-components";
 
-const Dropzone = styled.section`
-   background: ${({ theme }) => theme.colors.primary};
-   height: 20vh;
+const StyledDropzone = styled.section`
    width: 40vw;
+   height: 20vh;
+
+   background: ${({ theme }) => theme.colors.secondary};
+   border: 2px solid;
+   border-color: ${({ theme }) => theme.colors.primary};
+   border-radius: 15px;
 
    display: flex;
    justify-content: center;
    align-items: center;
 
-   border-radius: 10px;
-
-   border: 1px solid;
-   border-color: ${({ theme }) => theme.colors.secondary};
+   h2 {
+      color: ${({ theme }) => theme.colors.primary};
+      font-weight: 500;
+   }
 `;
-const AvatarDropzone = ({ closeModal, uploadAvatar }) => {
+function MyDropzone(props) {
    const onDrop = useCallback(acceptedFiles => {
-      console.log(acceptedFiles);
+      console.log(acceptedFiles[0]);
+      props.uploadAvatar(acceptedFiles[0]);
    }, []);
    const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDrop
    });
 
    return (
-      <Dropzone {...getRootProps()}>
+      <StyledDropzone {...getRootProps()}>
          <input {...getInputProps()} />
          {isDragActive ? (
-            <p>Drop the files here ...</p>
+            <h2>Drop it here...</h2>
          ) : (
-            <p>Drag 'n' drop some files here, or click to select files</p>
+            <h2>Drag 'n' drop your avatar here, or click to select files.</h2>
          )}
-      </Dropzone>
+      </StyledDropzone>
    );
-};
+}
 
-export default AvatarDropzone;
+export default MyDropzone;
