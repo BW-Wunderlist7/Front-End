@@ -80,6 +80,9 @@ const DueAlert = styled(Alert)`
    border-color: ${props => (props.overdue ? "red" : "#D3D3D3")};
    background-color: ${props => (props.overdue ? "#FF000022" : "#D3D3D322")};
    color: ${props => (props.overdue ? "red !important" : {})};
+
+   text-align: center;
+   width: 250px;
 `;
 
 const TaskCheckbox = ({ completed, onClick }) => {
@@ -100,7 +103,7 @@ const TaskDueDate = ({ dueDate }) => {
       const overDueDays = Math.floor(overDueTime / 86400000);
       return (
          <DueAlert overdue={overdue.toString()}>
-            {"Overdue by " + overDueDays + " days"}
+            {`Overdue by ${overDueDays} ${overDueDays === 1 ? "day" : "days"}`}
          </DueAlert>
       );
    }
@@ -149,10 +152,12 @@ const TaskCard = ({ task, taskFunctions }) => {
                <TaskInfo>
                   <h3>{task.task}</h3>
                   <p>{task.description}</p>
-                  {task.due_date && <TaskDueDate dueDate={task.due_date} />}
                </TaskInfo>
             </Left>
-            <Right>{Tags}</Right>
+            <Right>
+               {Tags}
+               {task.due_date && <TaskDueDate dueDate={task.due_date} />}
+            </Right>
          </StyledTaskCard>
          <Modal
             isOpen={modalIsOpen}
